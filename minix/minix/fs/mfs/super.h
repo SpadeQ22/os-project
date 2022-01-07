@@ -21,6 +21,7 @@
  * A super_block slot is free if s_dev == NO_DEV. 
  */
 
+
 EXTERN struct super_block {
   u32_t s_ninodes;		/* # usable inodes on the minor device */
   zone1_t  s_nzones;		/* total device size, including bit maps etc */
@@ -74,6 +75,7 @@ EXTERN struct super_block {
  * the FS.
  */
 #define MFSFLAG_MANDATORY_MASK 0xff00
+#define EXTSZ 3
 
 #endif
 

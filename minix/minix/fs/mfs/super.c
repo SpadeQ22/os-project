@@ -78,8 +78,13 @@ bit_t origin;			/* number of bit to start searching at */
 		if (*wptr == (bitchunk_t) ~0) continue;
 
 		/* Find and allocate the free bit. */
+    int cnt = 0;
 		k = (bitchunk_t) conv4(sp->s_native, (int) *wptr);
-		for (i = 0; (k & (1 << i)) != 0; ++i) {}
+		for (i = 0; (cnt < EXTSZ) && (i < 16); ++i) {
+      if((k & (1 << i)) == 0){
+        cnt++;
+      }
+    }
 
 		/* Bit number from the start of the bit map. */
 		b = ((bit_t) block * FS_BITS_PER_BLOCK(sp->s_block_size))
@@ -90,7 +95,9 @@ bit_t origin;			/* number of bit to start searching at */
 		if (b >= map_bits) break;
 
 		/* Allocate and return bit number. */
-		k |= 1 << i;
+    for(int j = i-1; j > i-EXTSZ; j--){
+		  k |= 1 << i;
+    }
 		*wptr = (bitchunk_t) conv4(sp->s_native, (int) k);
 		MARKDIRTY(bp);
 		put_block(bp, MAP_BLOCK);
@@ -136,7 +143,9 @@ bit_t bit_returned;		/* number of bit to insert into the map */
   	 / FS_BITCHUNK_BITS;
 
   bit = bit_returned % FS_BITCHUNK_BITS;
-  mask = 1 << bit;
+  for(int j = bit; j > bit-EXTSZ; j--){
+    mask = 1 << j;
+  }
 
   bp = get_block(sp->s_dev, start_block + block, NORMAL);
 
